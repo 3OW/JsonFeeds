@@ -8,6 +8,7 @@ import { HttpClientService } from './http-client/client.service';
 import { RssCronjobService } from './rss.cronjob';
 import { feedConfig } from './config/feed-config';
 import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
+import { DWToRssMapper } from './mapper/dw.mapper';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
   ],
   controllers: [RssController],
   providers: [
+    DWToRssMapper,
     HttpClientService,
     JsonToRssMapper,
     RssCronjobService,

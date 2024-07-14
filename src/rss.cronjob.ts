@@ -6,6 +6,8 @@ import { ConfigType } from '@nestjs/config';
 import { feedConfig, FeedsConfig } from './config/feed-config';
 import { RssService } from './rss.service';
 import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
+import { Feed } from 'feed';
+import { DWToRssMapper } from './mapper/dw.mapper';
 
 const INTERVAL = process.env.CRONJOB_INTERVAL ?? '*/30 * * * *';
 
@@ -18,6 +20,7 @@ export class RssCronjobService implements OnApplicationBootstrap {
     @Inject(feedConfig.KEY) private feedConfig: ConfigType<() => FeedsConfig>,
     @Inject(RssService) private rssService: RssService,
     @Inject(JsonToRssMapper) private jsonToRssMapper: JsonToRssMapper,
+    @Inject(DWToRssMapper) private dwToRssMapper: DWToRssMapper,
   ) {}
   async onApplicationBootstrap() {
     await this.updateRssFeedCache();
@@ -33,9 +36,14 @@ export class RssCronjobService implements OnApplicationBootstrap {
           ? await this.rssService.getFeedByGet(feed)
           : await this.rssService.getFeedByPOST(feed);
 
-      console.log('jsonFeed', jsonFeed);
-      const rssFeed = this.jsonToRssMapper.mapJsonToRss(jsonFeed, feed);
-      console.log('rssFeed', rssFeed);
+      let rssFeed: Feed;
+
+      if (feed.name === 'dw') {
+        rssFeed = this.dwToRssMapper.mapJsonToRss(jsonFeed, feed);
+      } else {
+        rssFeed = this.jsonToRssMapper.mapJsonToRss(jsonFeed, feed);
+      }
+
       await this.cache.set(
         feed.name,
         rssFeed.rss2(),

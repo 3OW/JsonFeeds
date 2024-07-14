@@ -3,7 +3,7 @@ import { FeedConfig } from 'src/types/feed-config';
 import { Feed, Item } from 'feed';
 
 @Injectable()
-export class JsonToRssMapper {
+export class DWToRssMapper {
   constructor() {}
 
   mapJsonToRss(
@@ -17,16 +17,6 @@ export class JsonToRssMapper {
       copyright: '',
     });
 
-    if (feedConfig.mapping.filters.length > 0) {
-      jsonResults = jsonResults.filter((record) => {
-        for (const filter of feedConfig.mapping.filters) {
-          if (record[filter.key] === filter.valueToFilterOut) {
-            return false;
-          }
-        }
-        return true;
-      });
-    }
     jsonResults.forEach((record) => {
       const item = this.mapPostsToItems(record, feedConfig);
       feed.addItem(item);
@@ -39,22 +29,22 @@ export class JsonToRssMapper {
   }
 
   mapPostsToItems(
-    record: Record<string, string>,
+    record: Record<string, string | object>,
     feedConfig: FeedConfig,
   ): Item {
-    const imageUrl = feedConfig.mapping.imageHasFullUrl
-      ? `${record[feedConfig.mapping.imageUrl]}`
-      : `${feedConfig.mapping.baseUri}${record[feedConfig.mapping.imageUrl]}`;
+    const imageUrl = `https://immo-api.deutsche-wohnen.com${record.images[0]?.filePath}`;
 
     const post: Item = {
-      title: record[feedConfig.mapping.title],
-      link: `${feedConfig.mapping.baseUri}${record[feedConfig.mapping.url]}`,
-      id: record[feedConfig.mapping.uid],
-      description: record[feedConfig.mapping.notice] ?? '',
+      title: record[feedConfig.mapping.title] as string,
+      link: `https://www.deutsche-wohnen.com/expose/object/${record[feedConfig.mapping.uid]}`,
+      id: record[feedConfig.mapping.uid] as string,
+      description: record[feedConfig.mapping.title]
+        ? (record[feedConfig.mapping.title] as string)
+        : '',
       date: new Date(),
       content: `
       <p><strong>Titel:</strong>  ${record[feedConfig.mapping.title]}</p>
-      <p><strong>Bezirk:</strong> ${record[feedConfig.mapping.district]}</p>
+      <p><strong>Bezirk:</strong> ${(record['address'] as Record<string, string>)?.district}</p>
       <p><strong>Fläche:</strong> ${record[feedConfig.mapping.area]}</p>
       <p><strong>Miete:</strong> ${record[feedConfig.mapping.rent]}</p>
       <p><strong>Räume:</strong> ${record[feedConfig.mapping.rooms]}</p>

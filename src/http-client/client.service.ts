@@ -9,7 +9,7 @@ export class HttpClientService {
     requestType: 'GET',
     payload?: object,
     headers?: Record<string, string>,
-  ) {
+  ): Promise<string | undefined> {
     const got = (await import('got')).default;
     const response = await got(url, {
       method: requestType,
@@ -33,7 +33,7 @@ export class HttpClientService {
     requestType: 'POST',
     payload?: object,
     headers?: Record<string, string>,
-  ) {
+  ): Promise<string | undefined> {
     const got = (await import('got')).default;
     const response = await got(url, {
       method: requestType,

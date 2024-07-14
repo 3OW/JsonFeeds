@@ -1,8 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { FeedConfig } from './types/feed-config';
 import { HttpClientService } from './http-client/client.service';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
-import { Feed } from 'feed';
 
 @Injectable()
 export class RssService {
@@ -32,7 +31,11 @@ export class RssService {
           );
         } catch (error) {
           console.error(`Error parsing JSON response: ${error}`);
+          throw new HttpException('Error parsing JSON response', 500);
         }
+      } else {
+        console.error('Error fetching JSON response');
+        throw new HttpException('Error fetching JSON response', 500);
       }
     }
 
@@ -60,14 +63,22 @@ export class RssService {
           );
         } catch (error) {
           console.error(`Error parsing JSON response: ${error}`);
+          throw new HttpException('Error parsing JSON response', 500);
         }
+      } else {
+        console.error('Error fetching JSON response');
+        throw new HttpException('Error fetching JSON response', 500);
       }
     }
 
     return responses.flat();
   }
 
-  async getFeedFromCache(feedName: string): Promise<string> {
-    return await this.cache.get(feedName);
+  async getFeedFromCache(feedName: string): Promise<unknown> {
+    const feed = await this.cache.get(feedName);
+    if (!feed || feed === null) {
+      throw new HttpException('Feed not found', 404);
+    }
+    return feed;
   }
 }
