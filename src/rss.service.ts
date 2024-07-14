@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { FeedConfig } from './types/feed-config';
 import { HttpClientService } from './http-client/client.service';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+import { Feed } from 'feed';
 
 @Injectable()
 export class RssService {
@@ -10,8 +11,10 @@ export class RssService {
     @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
-  async getFeedByGet(feed: FeedConfig): Promise<[object]> {
-    const responses = feed.request.urls.map(async (url) => {
+  async getFeedByGet(feed: FeedConfig): Promise<Record<string, string>[]> {
+    const responses = [];
+
+    for (const url of feed.request.urls) {
       const response = await this.httpClientService.getJson(
         url,
         'GET',
@@ -19,18 +22,27 @@ export class RssService {
         feed.request.headers,
       );
 
-      return response;
-    });
+      if (response) {
+        try {
+          const parsedResponse = JSON.parse(response);
+          responses.push(
+            feed.mapping.resultsContainer
+              ? parsedResponse[feed.mapping.resultsContainer]
+              : parsedResponse,
+          );
+        } catch (error) {
+          console.error(`Error parsing JSON response: ${error}`);
+        }
+      }
+    }
 
-    return feed.mapping.resultsContainer
-      ? [].concat.apply(
-          responses.map((response) => response[feed.mapping.resultsContainer]),
-        )
-      : [].concat.apply(responses);
+    return responses.flat();
   }
 
-  async getFeedByPOST(feed: FeedConfig): Promise<[object]> {
-    const responses = feed.request.urls.map(async (url) => {
+  async getFeedByPOST(feed: FeedConfig): Promise<Record<string, string>[]> {
+    const responses = [];
+
+    for (const url of feed.request.urls) {
       const response = await this.httpClientService.postJson(
         url,
         'POST',
@@ -38,17 +50,24 @@ export class RssService {
         feed.request.headers,
       );
 
-      return response;
-    });
+      if (response) {
+        try {
+          const parsedResponse = JSON.parse(response);
+          responses.push(
+            feed.mapping.resultsContainer
+              ? parsedResponse[feed.mapping.resultsContainer]
+              : parsedResponse,
+          );
+        } catch (error) {
+          console.error(`Error parsing JSON response: ${error}`);
+        }
+      }
+    }
 
-    return feed.mapping.resultsContainer
-      ? [].concat.apply(
-          responses.map((response) => response[feed.mapping.resultsContainer]),
-        )
-      : [].concat.apply(responses);
+    return responses.flat();
   }
 
-  getFeedFromCache(feedName: string): Promise<[object]> {
-    return this.cache.get(feedName);
+  async getFeedFromCache(feedName: string): Promise<string> {
+    return await this.cache.get(feedName);
   }
 }

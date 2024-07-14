@@ -17,12 +17,15 @@ export class HttpClientService {
       retry: {
         errorCodes: ['ETIMEDOUT', 'ECONNRESET'],
         statusCodes: [408, 429, 500, 502, 503, 504],
+        limit: 3,
+        backoffLimit: 2,
+        noise: 0.1,
       },
       json: payload,
       headers: headers ?? {},
     });
 
-    console.log(response.body);
+    return response?.body ? response.body : undefined;
   }
 
   async postJson(
@@ -38,11 +41,14 @@ export class HttpClientService {
       retry: {
         errorCodes: ['ETIMEDOUT', 'ECONNRESET'],
         statusCodes: [408, 429, 500, 502, 503, 504],
+        limit: 3,
+        backoffLimit: 2,
+        noise: 0.1,
       },
       json: payload,
       headers: headers ?? {},
     });
 
-    console.log(response.body);
+    return response?.body ? response.body : undefined;
   }
 }

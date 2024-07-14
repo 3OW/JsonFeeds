@@ -1,19 +1,20 @@
 import Joi from 'joi';
 import { registerAs } from '@nestjs/config';
-import howogeFeed from './feeds/howoge.js';
+import howogeNoWBSFeed from './feeds/howoge.js';
 
 import {
   MappingConfig,
   RequestConfig,
   FeedConfig,
 } from 'src/types/feed-config';
+import degewoNoWBSFeed from './feeds/dewego.js';
 
 export interface FeedsConfig {
   feeds: FeedConfig[];
 }
 export const feedConfig = registerAs('feedConfig', async () => {
   const config = {
-    feeds: [howogeFeed],
+    feeds: [howogeNoWBSFeed, degewoNoWBSFeed],
   };
 
   const { error } = feedSchema.validate(config);
@@ -33,17 +34,27 @@ const requestSchema = Joi.object({
 });
 
 const mappingSchema = Joi.object({
+  feedTitle: Joi.string().required(),
   baseUri: Joi.string().uri().required(),
   resultsContainer: Joi.string().optional(),
   title: Joi.string().required(),
   uid: Joi.string().required(),
   url: Joi.string().required(),
   imageUrl: Joi.string().optional(),
+  imageHasFullUrl: Joi.boolean().optional(),
   rent: Joi.string().required(),
   rooms: Joi.string().required(),
   area: Joi.string().required(),
   district: Joi.string().optional(),
   notice: Joi.string().optional(),
+  filters: Joi.array()
+    .items(
+      Joi.object({
+        key: Joi.string().required(),
+        valueToFilterOut: Joi.string().required(),
+      }),
+    )
+    .optional(),
 });
 
 const feedSchema = Joi.object({

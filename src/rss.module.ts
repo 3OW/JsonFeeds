@@ -7,6 +7,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { HttpClientService } from './http-client/client.service';
 import { RssCronjobService } from './rss.cronjob';
 import { feedConfig } from './config/feed-config';
+import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
 
 @Module({
   imports: [
@@ -18,6 +19,11 @@ import { feedConfig } from './config/feed-config';
     CacheModule.register(),
   ],
   controllers: [RssController],
-  providers: [RssService, HttpClientService, RssCronjobService],
+  providers: [
+    HttpClientService,
+    JsonToRssMapper,
+    RssCronjobService,
+    RssService,
+  ],
 })
 export class RssModule {}
