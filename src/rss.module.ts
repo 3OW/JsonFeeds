@@ -9,6 +9,7 @@ import { RssCronjobService } from './rss.cronjob';
 import { feedConfig } from './config/feed-config';
 import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
 import { DWToRssMapper } from './mapper/dw.mapper';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { DWToRssMapper } from './mapper/dw.mapper';
       isGlobal: true,
     }),
     CacheModule.register(),
+    ScheduleModule.forRoot(),
   ],
   controllers: [RssController],
   providers: [
