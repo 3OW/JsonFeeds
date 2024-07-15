@@ -7,10 +7,10 @@ export interface ServiceConfig {
 }
 export const serviceConfig = registerAs('serviceConfig', async () => {
   const config = {
-    cacheTTLInMinutes: process.env
+    cacheTTLInMinutes: process.env.CACHE_TTL_IN_MINUTES
       ? parseInt(process.env.CACHE_TTL_IN_MINUTES, 10) * 60 * 1000
       : 60 * 60 * 1000,
-    cronjobInterval: process.env
+    cronjobInterval: process.env.CRONJOB_INTERVAL
       ? process.env.CRONJOB_INTERVAL
       : '*/16  * * * *',
   };
