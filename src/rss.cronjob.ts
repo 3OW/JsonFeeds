@@ -9,7 +9,7 @@ import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
 import { Feed } from 'feed';
 import { DWToRssMapper } from './mapper/dw.mapper';
 
-const INTERVAL = process.env.CRONJOB_INTERVAL ?? '*/30 * * * *';
+const INTERVAL = process.env.CRONJOB_INTERVAL ?? '*/16 * * * *';
 
 @Injectable()
 export class RssCronjobService implements OnApplicationBootstrap {
@@ -28,6 +28,8 @@ export class RssCronjobService implements OnApplicationBootstrap {
 
   @Cron(INTERVAL)
   async updateRssFeedCache(): Promise<void> {
+    await this.waitRandomTime(1000, 1000 * 20);
+
     const feeds = this.feedConfig.feeds;
 
     for (const feed of feeds) {
@@ -50,5 +52,20 @@ export class RssCronjobService implements OnApplicationBootstrap {
         this.serviceConfig.cacheTTLInMinutes,
       );
     }
+  }
+
+  async waitRandomTime(
+    minMiliSeconds: number,
+    maxMiliSeconds: number,
+  ): Promise<void> {
+    await new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        Math.floor(
+          Math.random() * (maxMiliSeconds - minMiliSeconds + 1) +
+            minMiliSeconds,
+        ),
+      ),
+    );
   }
 }

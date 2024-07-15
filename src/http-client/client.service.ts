@@ -23,6 +23,9 @@ export class HttpClientService {
       },
       json: payload,
       headers: headers ?? {},
+    }).catch((error) => {
+      console.error(`getJson(): Error fetching JSON response: ${error}`);
+      return undefined;
     });
 
     return response?.body ? response.body : undefined;
@@ -47,6 +50,9 @@ export class HttpClientService {
       },
       json: payload,
       headers: headers ?? {},
+    }).catch((error) => {
+      console.error(`postJson(): Error fetching JSON response: ${error}`);
+      return undefined;
     });
 
     return response?.body ? response.body : undefined;

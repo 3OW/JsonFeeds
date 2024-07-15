@@ -12,7 +12,7 @@ export const serviceConfig = registerAs('serviceConfig', async () => {
       : 60 * 60 * 1000,
     cronjobInterval: process.env
       ? process.env.CRONJOB_INTERVAL
-      : '*/30  * * * *',
+      : '*/16  * * * *',
   };
 
   const { error } = configSchema.validate(config);
