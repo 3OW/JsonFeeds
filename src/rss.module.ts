@@ -10,6 +10,7 @@ import { feedConfig } from './config/feed-config';
 import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
 import { DWToRssMapper } from './mapper/dw.mapper';
 import { ScheduleModule } from '@nestjs/schedule';
+import { VoToRssMapper } from './mapper/vo.mapper copy';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     JsonToRssMapper,
     RssCronjobService,
     RssService,
+    VoToRssMapper,
   ],
 })
 export class RssModule {}

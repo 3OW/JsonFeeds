@@ -5,13 +5,14 @@ import howogeNoWBSFeed from './feeds/howoge.js';
 import { FeedConfig } from 'src/types/feed-config';
 import degewoNoWBSFeed from './feeds/dewego.js';
 import dwFeed from './feeds/dw.js';
+import vonoviaBerlinFeed from './feeds/vonovia.js';
 
 export interface FeedsConfig {
   feeds: FeedConfig[];
 }
 export const feedConfig = registerAs('feedConfig', async () => {
   const config = {
-    feeds: [howogeNoWBSFeed, degewoNoWBSFeed, dwFeed],
+    feeds: [howogeNoWBSFeed, degewoNoWBSFeed, dwFeed, vonoviaBerlinFeed],
   };
 
   const { error } = feedSchema.validate(config);

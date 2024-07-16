@@ -31,11 +31,9 @@ export class RssService {
           );
         } catch (error) {
           console.error(`Error parsing JSON response: ${error}`);
-          throw new HttpException('Error parsing JSON response', 500);
         }
       } else {
         console.error('Error fetching JSON response');
-        throw new HttpException('Error fetching JSON response', 500);
       }
     }
 
@@ -63,11 +61,9 @@ export class RssService {
           );
         } catch (error) {
           console.error(`Error parsing JSON response: ${error}`);
-          throw new HttpException('Error parsing JSON response', 500);
         }
       } else {
         console.error('Error fetching JSON response');
-        throw new HttpException('Error fetching JSON response', 500);
       }
     }
 

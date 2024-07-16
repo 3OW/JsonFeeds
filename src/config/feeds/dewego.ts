@@ -1,4 +1,4 @@
-/* ### Howoge Config ### */
+/* ### Dewego Config ### */
 
 import {
   FeedConfig,

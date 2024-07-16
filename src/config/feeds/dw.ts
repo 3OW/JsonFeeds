@@ -1,4 +1,4 @@
-/* ### Howoge Config ### */
+/* ### DW Config ### */
 
 import {
   FeedConfig,
