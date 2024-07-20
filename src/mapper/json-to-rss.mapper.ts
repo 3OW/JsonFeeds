@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FeedConfig } from 'src/types/feed-config';
 import { Feed, Item } from 'feed';
+import { JSONPath } from 'jsonpath-plus';
 
 @Injectable()
 export class JsonToRssMapper {
@@ -11,22 +12,25 @@ export class JsonToRssMapper {
     feedConfig: FeedConfig,
   ): Feed {
     const feed = new Feed({
-      title: feedConfig.mapping.feedTitle,
-      link: feedConfig.mapping.baseUri,
+      title: feedConfig.feedTitle,
+      link: feedConfig.baseUri,
       id: feedConfig.name,
       copyright: '',
     });
 
-    if (feedConfig.mapping.filters.length > 0) {
+    if (feedConfig.mappingOptions.filters.length > 0) {
       jsonResults = jsonResults.filter((record) => {
-        for (const filter of feedConfig.mapping.filters) {
-          if (record[filter.key] === filter.valueToFilterOut) {
+        for (const filter of feedConfig.mappingOptions.filters) {
+          const field = this.jsonValue(filter.key, record);
+
+          if (field === filter.valueToFilterOut) {
             return false;
           }
         }
         return true;
       });
     }
+
     jsonResults.forEach((record) => {
       const item = this.mapPostsToItems(record, feedConfig);
       feed.addItem(item);
@@ -38,32 +42,103 @@ export class JsonToRssMapper {
     return feed;
   }
 
-  mapPostsToItems(
-    record: Record<string, string>,
-    feedConfig: FeedConfig,
-  ): Item {
-    const imageUrl = feedConfig.mapping.imageHasFullUrl
-      ? `${record[feedConfig.mapping.imageUrl]}`
-      : `${feedConfig.mapping.baseUri}${record[feedConfig.mapping.imageUrl]}`;
+  mapPostsToItems(json: Record<string, string>, feedConfig: FeedConfig): Item {
+    const imageUrl = this.getImageUrl(json, feedConfig);
+    const link = this.getLink(json, feedConfig);
 
     const post: Item = {
-      title: record[feedConfig.mapping.title],
-      link: `${feedConfig.mapping.baseUri}${record[feedConfig.mapping.url]}`,
-      id: record[feedConfig.mapping.uid],
-      description: record[feedConfig.mapping.notice] ?? '',
+      title: this.jsonValue(feedConfig.mapping.title, json),
+      link,
+      id: this.jsonValue(feedConfig.mapping.uid, json),
+      description: this.jsonValue(feedConfig.mapping.notice, json),
       date: new Date(),
       content: `
-      <p><strong>Titel:</strong>  ${record[feedConfig.mapping.title]}</p>
-      <p><strong>Bezirk:</strong> ${record[feedConfig.mapping.district]}</p>
-      <p><strong>Fläche:</strong> ${record[feedConfig.mapping.area]}</p>
-      <p><strong>Miete:</strong> ${record[feedConfig.mapping.rent]}</p>
-      <p><strong>Räume:</strong> ${record[feedConfig.mapping.rooms]}</p>
-      <p><strong>Beschreibung:</strong> ${record[feedConfig.mapping.notice]}</p>
-      <image src="${imageUrl}" />
+      <p><strong>Titel:</strong>  ${this.jsonValue(feedConfig.mapping.title, json)}</p>
+      <p><strong>Bezirk:</strong> ${this.jsonValue(feedConfig.mapping.district, json)}</p>
+      <p><strong>Fläche:</strong> ${this.jsonValue(feedConfig.mapping.area, json)}</p>
+      <p><strong>Miete:</strong> ${this.jsonValue(feedConfig.mapping.rent, json)}</p>
+      <p><strong>Räume:</strong> ${this.jsonValue(feedConfig.mapping.rooms, json)}</p>
+      <p><strong>Beschreibung:</strong> ${this.jsonValue(feedConfig.mapping.notice, json)}</p>
       `,
-      image: { url: imageUrl },
+      image: imageUrl ? { url: imageUrl } : undefined,
     };
 
+    if (imageUrl) {
+      post.content += `<image src="${imageUrl}" />`;
+    }
+
     return post;
+  }
+
+  jsonValue = (
+    path: string,
+    json: null | boolean | number | string | object | any[],
+  ): string => {
+    const result = JSONPath({ path, json });
+
+    if (
+      Array.isArray(result) &&
+      result.length === 0 &&
+      typeof result !== 'string'
+    ) {
+      return ``;
+    }
+
+    return result.join(' ');
+  };
+
+  getImageUrl(
+    json: Record<string, string>,
+    feedConfig: FeedConfig,
+  ): string | undefined {
+    if (!feedConfig.mapping.imageUrl) return;
+
+    const prefix = feedConfig.mappingOptions.imagePrefixFromJson
+      ? this.jsonValue(feedConfig.mappingOptions.imagePrefix, json)
+      : feedConfig.mappingOptions.imagePrefix;
+
+    const url = this.jsonValue(feedConfig.mapping.imageUrl, json);
+
+    const suffix = feedConfig.mappingOptions.imageSuffix;
+
+    return prefix
+      ? suffix
+        ? `${prefix}${url}${suffix}`
+        : `${prefix}${url}`
+      : suffix
+        ? `${url}${suffix}`
+        : url;
+  }
+
+  getLink(
+    json: Record<string, string>,
+    feedConfig: FeedConfig,
+  ): string | undefined {
+    const prefix = feedConfig.mappingOptions.linkPrefixFromJson
+      ? this.jsonValue(feedConfig.mappingOptions.linkPrefix, json)
+      : feedConfig.mappingOptions.linkPrefix;
+
+    const link =
+      feedConfig.name === 'sul'
+        ? // TODO handle this case more generically in the future
+          this.jsonValue(feedConfig.mapping.url, json).replaceAll('/', '%2F')
+        : this.jsonValue(feedConfig.mapping.url, json);
+
+    let suffix = feedConfig.mappingOptions.linkSuffixFromJson
+      ? this.jsonValue(feedConfig.mappingOptions.linkSuffix, json)
+      : feedConfig.mappingOptions.linkSuffix;
+
+    // TODO handle this case more generically in the future
+    if (feedConfig.name === 'vonoviaBerlin' && suffix) {
+      suffix = `-${suffix}`;
+    }
+
+    return prefix
+      ? suffix
+        ? `${prefix}${link}${suffix}`
+        : `${prefix}${link}`
+      : suffix
+        ? `${link}${suffix}`
+        : link;
   }
 }

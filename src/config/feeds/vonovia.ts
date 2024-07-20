@@ -3,6 +3,7 @@
 import {
   FeedConfig,
   MappingConfig,
+  MappingOptions,
   RequestConfig,
 } from 'src/types/feed-config';
 
@@ -14,26 +15,32 @@ const request: RequestConfig = {
 };
 
 const mapping: MappingConfig = {
-  feedTitle: 'Vonovia',
-  baseUri: 'https://www.vonovia.de/zuhause-finden/immobilien/',
-  resultsContainer: 'results',
-  title: 'titel',
-  uid: 'objektnr_extern',
-  url: 'slug',
-  imageUrl: 'preview_img_url',
-  imageHasFullUrl: true,
-  rent: 'preis',
-  rooms: 'anzahl_zimmer',
-  area: 'groesse',
-  district: 'ort',
-  notice: 'strasse',
+  title: '$.titel',
+  uid: '$.objektnr_extern',
+  url: '$.slug',
+  imageUrl: '$.preview_img_url',
+  rent: '$.preis',
+  rooms: '$.anzahl_zimmer',
+  area: '$.groesse',
+  district: '$.ort',
+  notice: '$.strasse',
+};
+
+const mappingOptions: MappingOptions = {
   filters: [],
+  resultsContainer: 'results',
+  linkPrefix: 'https://www.vonovia.de/zuhause-finden/immobilien/',
+  linkSuffixFromJson: true,
+  linkSuffix: '$.wrk_id',
 };
 
 const vonoviaBerlinFeed: FeedConfig = {
   name: 'vonoviaBerlin',
-  request: request,
-  mapping: mapping,
+  feedTitle: 'Vonovia Berlin',
+  baseUri: 'https://www.vonovia.de/',
+  request,
+  mapping,
+  mappingOptions,
 };
 
 export default vonoviaBerlinFeed;

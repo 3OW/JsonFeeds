@@ -8,9 +8,7 @@ import { HttpClientService } from './http-client/client.service';
 import { RssCronjobService } from './rss.cronjob';
 import { feedConfig } from './config/feed-config';
 import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
-import { DWToRssMapper } from './mapper/dw.mapper';
 import { ScheduleModule } from '@nestjs/schedule';
-import { VoToRssMapper } from './mapper/vo.mapper copy';
 
 @Module({
   imports: [
@@ -24,12 +22,10 @@ import { VoToRssMapper } from './mapper/vo.mapper copy';
   ],
   controllers: [RssController],
   providers: [
-    DWToRssMapper,
     HttpClientService,
     JsonToRssMapper,
     RssCronjobService,
     RssService,
-    VoToRssMapper,
   ],
 })
 export class RssModule {}

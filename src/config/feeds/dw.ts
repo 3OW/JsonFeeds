@@ -3,6 +3,7 @@
 import {
   FeedConfig,
   MappingConfig,
+  MappingOptions,
   RequestConfig,
 } from 'src/types/feed-config';
 
@@ -25,25 +26,30 @@ const request: RequestConfig = {
 };
 
 const mapping: MappingConfig = {
-  feedTitle: 'Deutsche Wohnen',
-  baseUri: 'https://www.deutsche-wohnen.com',
-  title: 'title',
-  uid: 'id',
-  url: '...',
-  imageUrl: 'images',
-  imageHasFullUrl: false,
-  rent: 'price',
-  rooms: 'rooms',
-  area: 'area',
-  district: 'address',
-  notice: 'detailType',
+  title: '$.title',
+  uid: '$.id',
+  url: '$.id',
+  imageUrl: '$.images[0].filePath',
+  rent: '$.price',
+  rooms: '$.rooms',
+  area: '$.area',
+  district: '$.address.district',
+  notice: '$.detailType',
+};
+
+const mappingOptions: MappingOptions = {
   filters: [],
+  linkPrefix: 'https://www.deutsche-wohnen.com/expose/object/',
+  imagePrefix: 'https://immo-api.deutsche-wohnen.com',
 };
 
 const dwFeed: FeedConfig = {
   name: 'dw',
-  request: request,
-  mapping: mapping,
+  feedTitle: 'Deutsche Wohnen',
+  baseUri: 'https://www.deutsche-wohnen.com',
+  request,
+  mapping,
+  mappingOptions,
 };
 
 export default dwFeed;

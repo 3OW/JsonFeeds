@@ -1,18 +1,27 @@
 import Joi from 'joi';
 import { registerAs } from '@nestjs/config';
-import howogeNoWBSFeed from './feeds/howoge.js';
-
 import { FeedConfig } from 'src/types/feed-config';
 import degewoNoWBSFeed from './feeds/dewego.js';
 import dwFeed from './feeds/dw.js';
+import howogeNoWBSFeed from './feeds/howoge.js';
 import vonoviaBerlinFeed from './feeds/vonovia.js';
+import gesobauNoWBSFeed from './feeds/gesobau.js';
+import sulFeed from './feeds/sul.js';
 
 export interface FeedsConfig {
   feeds: FeedConfig[];
 }
 export const feedConfig = registerAs('feedConfig', async () => {
   const config = {
-    feeds: [howogeNoWBSFeed, degewoNoWBSFeed, dwFeed, vonoviaBerlinFeed],
+    // add new Feeds here
+    feeds: [
+      degewoNoWBSFeed,
+      dwFeed,
+      gesobauNoWBSFeed,
+      howogeNoWBSFeed,
+      vonoviaBerlinFeed,
+      sulFeed,
+    ],
   };
 
   const { error } = feedSchema.validate(config);
@@ -32,19 +41,18 @@ const requestSchema = Joi.object({
 });
 
 const mappingSchema = Joi.object({
-  feedTitle: Joi.string().required(),
-  baseUri: Joi.string().uri().required(),
-  resultsContainer: Joi.string().optional(),
   title: Joi.string().required(),
   uid: Joi.string().required(),
   url: Joi.string().required(),
   imageUrl: Joi.string().optional(),
-  imageHasFullUrl: Joi.boolean().optional(),
   rent: Joi.string().required(),
   rooms: Joi.string().required(),
   area: Joi.string().required(),
   district: Joi.string().optional(),
   notice: Joi.string().optional(),
+});
+
+const mappingOptionsSchema = Joi.object({
   filters: Joi.array()
     .items(
       Joi.object({
@@ -53,6 +61,14 @@ const mappingSchema = Joi.object({
       }),
     )
     .optional(),
+  resultsContainer: Joi.string().optional(),
+  imagePrefixFromJson: Joi.boolean().optional(),
+  imagePrefix: Joi.string().optional(),
+  imageSuffix: Joi.string().optional(),
+  linkPrefixFromJson: Joi.boolean().optional(),
+  linkPrefix: Joi.string().optional(),
+  linkSuffixFromJson: Joi.boolean().optional(),
+  linkSuffix: Joi.string().optional(),
 });
 
 const feedSchema = Joi.object({
@@ -60,8 +76,11 @@ const feedSchema = Joi.object({
     .items(
       Joi.object({
         name: Joi.string().required(),
+        feedTitle: Joi.string().required(),
+        baseUri: Joi.string().uri().required(),
         request: requestSchema.required(),
         mapping: mappingSchema.required(),
+        mappingOptions: mappingOptionsSchema.required(),
       }),
     )
     .min(1)

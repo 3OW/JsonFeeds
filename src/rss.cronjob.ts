@@ -7,8 +7,6 @@ import { feedConfig, FeedsConfig } from './config/feed-config';
 import { RssService } from './rss.service';
 import { JsonToRssMapper } from './mapper/json-to-rss.mapper';
 import { Feed } from 'feed';
-import { DWToRssMapper } from './mapper/dw.mapper';
-import { VoToRssMapper } from './mapper/vo.mapper copy';
 
 const INTERVAL = process.env.CRONJOB_INTERVAL ?? '*/16 * * * *';
 
@@ -21,8 +19,6 @@ export class RssCronjobService implements OnApplicationBootstrap {
     @Inject(feedConfig.KEY) private feedConfig: ConfigType<() => FeedsConfig>,
     @Inject(RssService) private rssService: RssService,
     @Inject(JsonToRssMapper) private jsonToRssMapper: JsonToRssMapper,
-    @Inject(DWToRssMapper) private dwToRssMapper: DWToRssMapper,
-    @Inject(VoToRssMapper) private voToRssMapper: VoToRssMapper,
   ) {}
   async onApplicationBootstrap() {
     await this.updateRssFeedCache();
@@ -42,13 +38,7 @@ export class RssCronjobService implements OnApplicationBootstrap {
 
       let rssFeed: Feed;
 
-      if (feed.name === 'dw') {
-        rssFeed = this.dwToRssMapper.mapJsonToRss(jsonFeed, feed);
-      } else if (feed.name.startsWith('vonovia')) {
-        rssFeed = this.voToRssMapper.mapJsonToRss(jsonFeed, feed);
-      } else {
-        rssFeed = this.jsonToRssMapper.mapJsonToRss(jsonFeed, feed);
-      }
+      rssFeed = this.jsonToRssMapper.mapJsonToRss(jsonFeed, feed);
 
       await this.cache.set(
         feed.name,

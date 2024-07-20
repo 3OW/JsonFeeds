@@ -3,6 +3,7 @@
 import {
   FeedConfig,
   MappingConfig,
+  MappingOptions,
   RequestConfig,
 } from 'src/types/feed-config';
 
@@ -14,31 +15,36 @@ const request: RequestConfig = {
 };
 
 const mapping: MappingConfig = {
-  feedTitle: 'HOWOGE ohne WBS',
-  baseUri: 'https://www.howoge.de',
-  resultsContainer: 'immoobjects',
-  title: 'title',
-  uid: 'uid',
-  url: 'link',
-  imageUrl: 'image',
-  imageHasFullUrl: false,
-  rent: 'rent',
-  rooms: 'rooms',
-  area: 'area',
-  district: 'district',
-  notice: 'notice',
+  title: '$.title',
+  uid: '$.uid',
+  url: '$.link',
+  imageUrl: '$.image',
+  rent: '$.rent',
+  rooms: '$.rooms',
+  area: '$.area',
+  district: '$.district',
+  notice: '$.notice',
+};
+
+const mappingOptions: MappingOptions = {
   filters: [
     {
-      key: 'wbs',
+      key: '$.wbs',
       valueToFilterOut: 'ja',
     },
   ],
+  resultsContainer: 'immoobjects',
+  imagePrefix: 'https://www.howoge.de',
+  linkPrefix: 'https://www.howoge.de',
 };
 
 const howogeNoWBSFeed: FeedConfig = {
   name: 'howoge',
-  request: request,
-  mapping: mapping,
+  feedTitle: 'HOWOGE ohne WBS',
+  baseUri: 'https://www.howoge.de',
+  request,
+  mapping,
+  mappingOptions,
 };
 
 export default howogeNoWBSFeed;

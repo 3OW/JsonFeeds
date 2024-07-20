@@ -6,20 +6,15 @@ export type RequestConfig = {
 };
 
 export type MappingConfig = {
-  feedTitle: string;
-  baseUri: string;
-  resultsContainer?: string;
   title: string;
   uid: string;
   url: string;
   imageUrl?: string;
-  imageHasFullUrl?: boolean;
   rent: string;
   rooms: string;
   area: string;
   district?: string;
   notice?: string;
-  filters: MappingFilter[];
 };
 
 export type MappingFilter = {
@@ -27,8 +22,23 @@ export type MappingFilter = {
   valueToFilterOut: string;
 };
 
+export type MappingOptions = {
+  filters: MappingFilter[];
+  resultsContainer?: string;
+  imagePrefixFromJson?: boolean;
+  imagePrefix?: string;
+  imageSuffix?: string;
+  linkPrefixFromJson?: boolean;
+  linkPrefix?: string;
+  linkSuffixFromJson?: boolean;
+  linkSuffix?: string;
+};
+
 export type FeedConfig = {
   name: string;
+  feedTitle: string;
+  baseUri: string;
   request: RequestConfig;
   mapping: MappingConfig;
+  mappingOptions: MappingOptions;
 };

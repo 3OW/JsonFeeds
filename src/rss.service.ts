@@ -25,8 +25,8 @@ export class RssService {
         try {
           const parsedResponse = JSON.parse(response);
           responses.push(
-            feed.mapping.resultsContainer
-              ? parsedResponse[feed.mapping.resultsContainer]
+            feed.mappingOptions.resultsContainer
+              ? parsedResponse[feed.mappingOptions.resultsContainer]
               : parsedResponse,
           );
         } catch (error) {
@@ -55,8 +55,8 @@ export class RssService {
         try {
           const parsedResponse = JSON.parse(response);
           responses.push(
-            feed.mapping.resultsContainer
-              ? parsedResponse[feed.mapping.resultsContainer]
+            feed.mappingOptions.resultsContainer
+              ? parsedResponse[feed.mappingOptions.resultsContainer]
               : parsedResponse,
           );
         } catch (error) {
