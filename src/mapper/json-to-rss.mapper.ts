@@ -156,8 +156,12 @@ export class JsonToRssMapper {
   ): string | undefined {
     if (!feedConfig.mapping.address) return;
     const path = feedConfig.mapping.address;
-    const address = JSONPath({ path, json }).join('+');
+    const rawAddress = JSONPath({ path, json });
+    const address = rawAddress
+      .map((stringElement: string) => stringElement.trim())
+      .join('+')
+      .replace(/ /g, '+');
 
-    return `<p><strong>Google Maps:</strong> <a href="https://www.google.com/maps/search/?api=1&query=${address}">Auf Google Maps ansehen.</a></p>`;
+    return `<p><strong>Karte:</strong> <a href="https://www.google.com/maps/search/?api=1&query=${address}">Auf Google Maps ansehen.</a></p>`;
   }
 }
