@@ -157,10 +157,6 @@ export class JsonToRssMapper {
     if (!feedConfig.mapping.address) return;
     const path = feedConfig.mapping.address;
     const rawAddress = JSONPath({ path, json }).join('+');
-    // const address = rawAddress
-    //   .map((stringElement: string) => stringElement.trim())
-    //   .join('+')
-    //   .replace(/ /g, '+');
 
     const address = new URL(`https://www.google.com/maps/place/${rawAddress}`);
     return `<p><strong>Karte:</strong> <a href="${address.href}">Auf Google Maps ansehen.</a></p>`;
