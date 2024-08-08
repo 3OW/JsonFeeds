@@ -21,6 +21,7 @@ const mapping: MappingConfig = {
   rent: '$.raw.warmmiete_floatS',
   rooms: '$.raw.zimmer_intS',
   area: '$.area',
+  address: '$.raw[adresse_stringS,plz_stringS,ort_stringS]',
   district: '$.raw.region_stringM',
   notice: '$.raw.content',
 };

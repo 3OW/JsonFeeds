@@ -45,12 +45,16 @@ export class JsonToRssMapper {
   mapPostsToItems(json: Record<string, string>, feedConfig: FeedConfig): Item {
     const imageUrl = this.getImageUrl(json, feedConfig);
     const link = this.getLink(json, feedConfig);
+    const googleMaps = this.createMapsLink(json, feedConfig);
+    const description = this.jsonValue(feedConfig.mapping.notice, json);
 
     const post: Item = {
       title: this.jsonValue(feedConfig.mapping.title, json),
       link,
       id: this.jsonValue(feedConfig.mapping.uid, json),
-      description: this.jsonValue(feedConfig.mapping.notice, json),
+      description: Array.isArray(description)
+        ? description.join('<br>')
+        : description,
       date: new Date(),
       content: `
       <p><strong>Titel:</strong>  ${this.jsonValue(feedConfig.mapping.title, json)}</p>
@@ -62,6 +66,10 @@ export class JsonToRssMapper {
       `,
       image: imageUrl ? { url: imageUrl } : undefined,
     };
+
+    if (googleMaps) {
+      post.content += googleMaps;
+    }
 
     if (imageUrl) {
       post.content += `<image src="${imageUrl}" />`;
@@ -140,5 +148,16 @@ export class JsonToRssMapper {
       : suffix
         ? `${link}${suffix}`
         : link;
+  }
+
+  createMapsLink(
+    json: Record<string, string>,
+    feedConfig: FeedConfig,
+  ): string | undefined {
+    if (!feedConfig.mapping.address) return;
+    const path = feedConfig.mapping.address;
+    const address = JSONPath({ path, json }).join('+');
+
+    return `<p><strong>Google Maps:</strong> <a href="https://www.google.com/maps/search/?api=1&query=${address}">Auf Google Maps ansehen.</a></p>`;
   }
 }

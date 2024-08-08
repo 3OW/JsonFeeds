@@ -30,7 +30,7 @@ export const feedConfig = registerAs('feedConfig', async () => {
     throw new Error(`Config validation error: ${error.message}`);
   }
 
-  return config as FeedsConfig;
+  return config;
 });
 
 const requestSchema = Joi.object({
@@ -48,6 +48,7 @@ const mappingSchema = Joi.object({
   rent: Joi.string().required(),
   rooms: Joi.string().required(),
   area: Joi.string().required(),
+  address: Joi.string().optional(),
   district: Joi.string().optional(),
   notice: Joi.string().optional(),
 });

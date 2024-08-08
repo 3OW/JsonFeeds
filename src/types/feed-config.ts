@@ -13,6 +13,7 @@ export type MappingConfig = {
   rent: string;
   rooms: string;
   area: string;
+  address?: string;
   district?: string;
   notice?: string;
 };

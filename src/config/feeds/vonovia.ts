@@ -22,6 +22,7 @@ const mapping: MappingConfig = {
   rent: '$.preis',
   rooms: '$.anzahl_zimmer',
   area: '$.groesse',
+  address: '$[strasse,plz,ort]',
   district: '$.ort',
   notice: '$.strasse',
 };

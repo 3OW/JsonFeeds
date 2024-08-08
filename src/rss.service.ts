@@ -10,7 +10,9 @@ export class RssService {
     @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
-  async getFeedByGet(feed: FeedConfig): Promise<Record<string, string>[]> {
+  async getJsonDataByGetRequest(
+    feed: FeedConfig,
+  ): Promise<Record<string, string>[]> {
     const responses = [];
 
     for (const url of feed.request.urls) {
@@ -27,7 +29,7 @@ export class RssService {
           responses.push(
             feed.mappingOptions.resultsContainer
               ? parsedResponse[feed.mappingOptions.resultsContainer]
-              : parsedResponse,
+              : parsedResponse, 
           );
         } catch (error) {
           console.error(`Error parsing JSON response: ${error}`);
@@ -40,7 +42,9 @@ export class RssService {
     return responses.flat();
   }
 
-  async getFeedByPOST(feed: FeedConfig): Promise<Record<string, string>[]> {
+  async getJsonByPOSTRequest(
+    feed: FeedConfig,
+  ): Promise<Record<string, string>[]> {
     const responses = [];
 
     for (const url of feed.request.urls) {

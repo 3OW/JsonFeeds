@@ -25,8 +25,9 @@ const mapping: MappingConfig = {
   rent: '$.rent_total_with_vat',
   rooms: '$.number_of_rooms',
   area: '$.living_space',
+  address: '$[street,street_number,zipcode,city]',
   district: '$.address',
-  notice: '$.full_address',
+  notice: '$.[other_information]',
 };
 
 const mappingOptions: MappingOptions = {

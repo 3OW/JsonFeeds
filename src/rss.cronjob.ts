@@ -33,12 +33,10 @@ export class RssCronjobService implements OnApplicationBootstrap {
     for (const feed of feeds) {
       const jsonFeed =
         feed.request.requestType === 'GET'
-          ? await this.rssService.getFeedByGet(feed)
-          : await this.rssService.getFeedByPOST(feed);
+          ? await this.rssService.getJsonDataByGetRequest(feed)
+          : await this.rssService.getJsonByPOSTRequest(feed);
 
-      let rssFeed: Feed;
-
-      rssFeed = this.jsonToRssMapper.mapJsonToRss(jsonFeed, feed);
+      const rssFeed: Feed = this.jsonToRssMapper.mapJsonToRss(jsonFeed, feed);
 
       await this.cache.set(
         feed.name,

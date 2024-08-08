@@ -21,8 +21,9 @@ const mapping: MappingConfig = {
   rent: '$.costs.totalRent',
   rooms: '$.details.rooms',
   area: '$.details.livingSpace',
+  address: '$.address[street,house_number,postal_code,city]',
   district: '$.address.precinct',
-  notice: '$.address[street,house_number,postal_code,city]',
+  notice: '$.address[precinct]',
 };
 
 const mappingOptions: MappingOptions = {
